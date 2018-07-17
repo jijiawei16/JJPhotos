@@ -11,13 +11,15 @@
 #import "JJPhotosCollection.h"
 #import "JJPhotosCollectionFlowLayout.h"
 #import "JJShowPhotosVIew.h"
+#import "JJAlbumListTableView.h"
+#import "UIButton+JJType.h"///按钮图片文字样式设置
 
 //#define header_h 64
 //#define footer_h 50
 #define sw self.view.frame.size.width
 #define sh self.view.frame.size.height
 #define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
-@interface JJPhotosViewController ()<JJPhotosCollectionDelegate>
+@interface JJPhotosViewController ()<JJPhotosCollectionDelegate,JJAlbumListTableViewDelegate>
 
 @property (nonatomic , strong) UIView *header;
 @property (nonatomic , strong) UIView *footer;
@@ -28,8 +30,12 @@
 
 @implementation JJPhotosViewController
 {
+    UIButton *confirm;
     CGFloat header_h;
     CGFloat footer_h;
+    UIButton *albumListBackGround;///相册列表背景
+    JJAlbumListTableView *albumList;///相册列表
+    UIButton *albumListBtn;///相册列表按钮
 }
 - (instancetype)initWithcallBack:(JJPhotosViewControllerCallBack)callBack
 {
@@ -100,14 +106,15 @@
     [preview setTitle:@"预览" forState:UIControlStateNormal];
     [preview setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [preview addTarget:self action:@selector(preview:) forControlEvents:UIControlEventTouchUpInside];
-//    [_footer addSubview:preview];
+    [_footer addSubview:preview];
     
     // 确定按钮
-    UIButton *confirm = [[UIButton alloc] initWithFrame:CGRectMake(sw-65, 10, 50, 30)];
+    confirm = [[UIButton alloc] initWithFrame:CGRectMake(sw-65, 10, 50, 30)];
     [confirm setTitle:@"完成" forState:UIControlStateNormal];
+    confirm.userInteractionEnabled = NO;
     [confirm setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [confirm addTarget:self action:@selector(confirm:) forControlEvents:UIControlEventTouchUpInside];
-    [confirm setBackgroundColor:[UIColor greenColor]];
+    [confirm setBackgroundColor:[UIColor lightGrayColor]];
     confirm.layer.cornerRadius = 5.0;
     confirm.layer.masksToBounds = YES;
     confirm.titleLabel.font = [UIFont systemFontOfSize:14];
@@ -118,8 +125,19 @@
     [cancel setTitle:@"取消" forState:UIControlStateNormal];
     [cancel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [cancel addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
-    cancel.titleLabel.font = [UIFont systemFontOfSize:14];
+    cancel.titleLabel.font = [UIFont systemFontOfSize:16];
     [_header addSubview:cancel];
+    
+    // 相册列表按钮
+    albumListBtn = [[UIButton alloc] initWithFrame:CGRectMake(sw/2-50, header_h-40, 100, 30)];
+    [albumListBtn setTitle:@"相册列表" forState:UIControlStateNormal];
+    [albumListBtn setImage:[UIImage imageNamed:@"下拉"] forState:UIControlStateNormal];
+    [albumListBtn setImage:[UIImage imageNamed:@"收回"] forState:UIControlStateSelected];
+    [albumListBtn layoutButtonWithEdgeInsetsStyle:JJButtonEdgeInsetsStyleRight imageTitleSpace:5];
+    [albumListBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [albumListBtn addTarget:self action:@selector(albumList:) forControlEvents:UIControlEventTouchUpInside];
+    albumListBtn.titleLabel.font = [UIFont systemFontOfSize:18];
+    [_header addSubview:albumListBtn];
 }
 
 #pragma mark 懒加载
@@ -149,9 +167,19 @@
     return _collection;
 }
 #pragma mark 代理方法和按钮点击方法
-- (void)JJPhotosCollectionDidSelectIndex:(NSInteger)index
+- (void)JJPhotosCollectionDidSelectCell
 {
-    NSLog(@"%ld",(long)index);
+    // 这里需要等一段时间才能操作,保存相册图片需要一段时间,用到了block回调
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+       
+        if ([JJPhotoManager getPhotos].count) {
+            [confirm setBackgroundColor:[UIColor greenColor]];
+            confirm.userInteractionEnabled = YES;
+        }else {
+            [confirm setBackgroundColor:[UIColor lightGrayColor]];
+            confirm.userInteractionEnabled = NO;
+        }
+    });
 }
 - (void)preview:(UIButton *)sender
 {
@@ -163,9 +191,6 @@
 }
 - (void)confirm:(UIButton *)sender
 {
-    if (![JJPhotoManager getPhotos].count) {
-        return;
-    }
     self.block([JJPhotoManager getPhotos]);
     [JJPhotoManager clear];
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -174,5 +199,40 @@
 {
     [JJPhotoManager clear];
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+#pragma mark 展示相册列表界面
+- (void)albumList:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        [self showAlbumList];
+    }else {
+        [self albumListBackHidden];
+    }
+}
+- (void)showAlbumList
+{
+    albumListBackGround = [[UIButton alloc] initWithFrame:CGRectMake(0, header_h, sw, sh-header_h)];
+    albumListBackGround.backgroundColor = [UIColor blackColor];
+    albumListBackGround.alpha = 0.5;
+    [albumListBackGround addTarget:self action:@selector(albumListBackHidden) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:albumListBackGround];
+    
+    albumList = [[JJAlbumListTableView alloc] initWithFrame:CGRectMake(0, header_h, sw, sh-header_h-footer_h-100)];
+    albumList.jj_delegate = self;
+    [self.view addSubview:albumList];
+    [albumList setUpItems:[[JJPhotoManager manager] getAllAblums]];
+}
+- (void)albumListBackHidden
+{
+    albumListBtn.selected = NO;
+    [albumListBackGround removeFromSuperview];
+    [albumList removeFromSuperview];
+}
+- (void)JJAlbumListTableViewDidSelectAlbum:(JJAblumInfo *)album
+{
+    [self albumListBackHidden];
+    self.items = [[JJPhotoManager manager] fetchAssetsInCollection:album.assetCollection asending:YES];
+    self.collection.items = self.items;
 }
 @end

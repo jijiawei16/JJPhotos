@@ -80,9 +80,6 @@
 - (void)click:(UITapGestureRecognizer *)sender
 {
     [self selectBtnClick];
-//    CGPoint touchPoint = [sender locationInView:self];
-//    if ([self.select.layer.presentationLayer hitTest:touchPoint]) {
-//    }
 }
 - (void)selectBtnClick
 {

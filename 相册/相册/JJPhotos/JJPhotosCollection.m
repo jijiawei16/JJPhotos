@@ -74,9 +74,14 @@
         }
     }];
     self.isMax = NO;
+    ///刷新完成按钮
+    if ([self.jj_delegate respondsToSelector:@selector(JJPhotosCollectionDidSelectCell)]) {
+        [self.jj_delegate JJPhotosCollectionDidSelectCell];
+    }
 }
 - (void)JJPhotosCollectionCellDidSelectMaxCount
 {
+
     [self.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         if ([obj isKindOfClass:[JJPhotosCollectionCell class]]) {
@@ -85,6 +90,10 @@
         }
     }];
     self.isMax = YES;
+    ///刷新完成按钮
+    if ([self.jj_delegate respondsToSelector:@selector(JJPhotosCollectionDidSelectCell)]) {
+        [self.jj_delegate JJPhotosCollectionDidSelectCell];
+    }
 }
 #pragma mark 设置数据源
 - (void)setItems:(NSArray *)items

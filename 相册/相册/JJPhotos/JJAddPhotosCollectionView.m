@@ -122,7 +122,6 @@
                 [cell setUpImage:self.items[indexPath.row]];
             }
         }
-
     }
     return cell;
 }
@@ -201,7 +200,7 @@
             self.current = cell;
             self.move = [cell snapshotViewAfterScreenUpdates:NO];
             cell.hidden = YES;
-            _move.frame = cell.frame;
+            _move.frame = [self.current convertRect:self.current.bounds toView:self.superVC.view];
             _move.transform = CGAffineTransformMakeScale(1.1, 1.1);
             [self.superVC.view addSubview:_move];
             _currentPoint = [self.longPress locationOfTouch:0 inView:self.longPress.view];
@@ -223,13 +222,16 @@
         }
         case UIGestureRecognizerStateEnded: {
             
-            [UIView animateWithDuration:0.1 animations:^{
-                _move.center = self.current.center;
-            } completion:^(BOOL finished) {
-                [_move removeFromSuperview];
-                self.current.hidden = NO;
-                self.userInteractionEnabled = YES;
-            }];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                [UIView animateWithDuration:0.3 animations:^{
+                    _move.frame = [self.current convertRect:self.current.bounds toView:self.superVC.view];
+                } completion:^(BOOL finished) {
+                    [_move removeFromSuperview];
+                    self.current.hidden = NO;
+                    self.userInteractionEnabled = YES;
+                }];
+            });
             [self endInteractiveMovement];
             break;
         }
@@ -259,3 +261,4 @@
     return _longPress;
 }
 @end
+

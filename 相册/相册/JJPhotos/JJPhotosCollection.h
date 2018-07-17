@@ -12,14 +12,14 @@
 
 @protocol JJPhotosCollectionDelegate <NSObject>
 
-// 点击了某个cell
-- (void)JJPhotosCollectionDidSelectIndex:(NSInteger)index;
+///选中了cell
+- (void)JJPhotosCollectionDidSelectCell;
 @end
 @interface JJPhotosCollection : UICollectionView
 
-// 代理
+///代理
 @property (nonatomic , weak) id<JJPhotosCollectionDelegate>jj_delegate;
 
-// 设置数据源
+///设置数据源
 @property (nonatomic , strong) NSArray *items;
 @end

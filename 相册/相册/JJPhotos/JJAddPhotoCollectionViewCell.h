@@ -11,12 +11,12 @@
 typedef void(^JJAddPhotoCollectionViewCellCallBack)(void);
 @interface JJAddPhotoCollectionViewCell : UICollectionViewCell
 
-// 通过url设置图片
+///通过url设置图片
 - (void)setUpImageUrl:(NSString *)imageUrl;
 - (void)setUpImageUrl:(NSString *)imageUrl callBack:(JJAddPhotoCollectionViewCellCallBack)callBack;
 
-// 直接设置图片
+///直接设置图片
 - (void)setUpImage:(UIImage*)image;
-// 点击回调
+///点击回调
 - (void)setUpImage:(UIImage*)image callBack:(JJAddPhotoCollectionViewCellCallBack)callBack;
 @end

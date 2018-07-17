@@ -11,29 +11,27 @@
 
 @protocol JJPhotosCollectionCellDelegate <NSObject>
 
-// 选择了最大数
+///图片数量达到了最大数
 - (void)JJPhotosCollectionCellDidSelectMaxCount;
+///图片数量没有达到最大数
 - (void)JJPhotosCollectionCellDidNotSelectMaxCount;
 @end
+
 @interface JJPhotosCollectionCell : UICollectionViewCell
 
-/* 代理 */
+///代理
 @property (nonatomic , weak) id<JJPhotosCollectionCellDelegate>delegate;
-/* 选中按钮 */
+///选中按钮
 @property (nonatomic , strong) UIButton *select;
-/* 标识id */
+///标识id
 @property (nonatomic , strong) PHAsset *asset;
-/* 数量标题 */
+///数量标题
 @property (nonatomic , strong) NSString *title;
-/* 是否最大值 */
+///是否最大值
 @property (nonatomic , assign) BOOL isMax;
-/*
- * 显示遮罩
- */
-- (void)showShade;
 
-/*
- * 隐藏遮罩
- */
+///显示遮罩
+- (void)showShade;
+///隐藏遮罩
 - (void)hiddenShade;
 @end

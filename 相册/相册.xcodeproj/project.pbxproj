@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F060E3D20FD983300BAD633 /* JJAlbumListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F060E3C20FD983300BAD633 /* JJAlbumListTableView.m */; };
+		0F060E4120FDBA6800BAD633 /* UIButton+JJType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F060E3F20FDBA6800BAD633 /* UIButton+JJType.m */; };
 		0FAADF5220D3569F00246592 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FAADF5120D3569F00246592 /* AppDelegate.m */; };
 		0FAADF5520D3569F00246592 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FAADF5420D3569F00246592 /* ViewController.m */; };
 		0FAADF5820D3569F00246592 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0FAADF5620D3569F00246592 /* Main.storyboard */; };
@@ -49,6 +51,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F060E3B20FD983300BAD633 /* JJAlbumListTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JJAlbumListTableView.h; sourceTree = "<group>"; };
+		0F060E3C20FD983300BAD633 /* JJAlbumListTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JJAlbumListTableView.m; sourceTree = "<group>"; };
+		0F060E3F20FDBA6800BAD633 /* UIButton+JJType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+JJType.m"; sourceTree = "<group>"; };
+		0F060E4020FDBA6800BAD633 /* UIButton+JJType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+JJType.h"; sourceTree = "<group>"; };
 		0FAADF4D20D3569F00246592 /* 相册.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "相册.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FAADF5020D3569F00246592 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0FAADF5120D3569F00246592 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -120,6 +126,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F060E3E20FDBA5700BAD633 /* JJTools */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = JJTools;
+			sourceTree = "<group>";
+		};
 		0FAADF4420D3569F00246592 = {
 			isa = PBXGroup;
 			children = (
@@ -143,6 +156,7 @@
 		0FAADF4F20D3569F00246592 /* 相册 */ = {
 			isa = PBXGroup;
 			children = (
+				0F060E3E20FDBA5700BAD633 /* JJTools */,
 				0FAADF9E20D35CF800246592 /* JJWebImage */,
 				0FAADF8220D356D300246592 /* JJPhotos */,
 				0FAADF5020D3569F00246592 /* AppDelegate.h */,
@@ -195,8 +209,12 @@
 				0FAADF9020D356D300246592 /* JJPhotosCollectionFlowLayout.m */,
 				0FAADF9120D356D300246592 /* JJPhotosViewController.h */,
 				0FAADF9220D356D300246592 /* JJPhotosViewController.m */,
+				0F060E3B20FD983300BAD633 /* JJAlbumListTableView.h */,
+				0F060E3C20FD983300BAD633 /* JJAlbumListTableView.m */,
 				0FAADF9320D356D300246592 /* JJShowPhotosVIew.h */,
 				0FAADF9420D356D300246592 /* JJShowPhotosVIew.m */,
+				0F060E4020FDBA6800BAD633 /* UIButton+JJType.h */,
+				0F060E3F20FDBA6800BAD633 /* UIButton+JJType.m */,
 			);
 			path = JJPhotos;
 			sourceTree = "<group>";
@@ -352,8 +370,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F060E3D20FD983300BAD633 /* JJAlbumListTableView.m in Sources */,
 				0FAADF9B20D356D300246592 /* JJPhotosCollectionFlowLayout.m in Sources */,
 				0FAADF5520D3569F00246592 /* ViewController.m in Sources */,
+				0F060E4120FDBA6800BAD633 /* UIButton+JJType.m in Sources */,
 				0FAADFA920D35CF800246592 /* JJWebImageManager.m in Sources */,
 				0FAADFAB20D35CF800246592 /* UIImage+JJLocationGif.m in Sources */,
 				0FAADF9720D356D300246592 /* JJAddPhotosCollectionView.m in Sources */,
@@ -531,9 +551,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FC8P2LNWW9;
 				INFOPLIST_FILE = "相册/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.---.--";
+				PRODUCT_BUNDLE_IDENTIFIER = JJPhoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -544,9 +566,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FC8P2LNWW9;
 				INFOPLIST_FILE = "相册/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.---.--";
+				PRODUCT_BUNDLE_IDENTIFIER = JJPhoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

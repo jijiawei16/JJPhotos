@@ -10,13 +10,9 @@
 
 @interface JJShowPhotosVIew : UIScrollView
 
-/*
- * 是否显示保存按钮
- */
+///是否显示保存按钮
 @property (nonatomic , assign) BOOL showSave;
-/*
- * 设置数据源
- */
-- (void)setUpItems:(NSArray *)items current:(NSInteger)current;
 
+///设置数据源
+- (void)setUpItems:(NSArray *)items current:(NSInteger)current;
 @end
