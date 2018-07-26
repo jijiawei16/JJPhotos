@@ -25,6 +25,7 @@
 @property (nonatomic , strong) UIView *footer;
 @property (nonatomic , strong) JJPhotosCollection *collection;
 @property (nonatomic , strong) NSArray *items;
+@property (nonatomic , strong) PHAssetCollection *assetCollection;
 @property (nonatomic , copy) JJPhotosViewControllerCallBack block;
 @end
 
@@ -36,6 +37,8 @@
     UIButton *albumListBackGround;///相册列表背景
     JJAlbumListTableView *albumList;///相册列表
     UIButton *albumListBtn;///相册列表按钮
+    NSString *photoListName;///用来判断相册列表的标识
+    BOOL needSelect;///是否需要自动选中第一个照片
 }
 - (instancetype)initWithcallBack:(JJPhotosViewControllerCallBack)callBack
 {
@@ -48,7 +51,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor lightTextColor];
-    
+    self.assetCollection = nil;
+    photoListName = @"Camera Roll";
+    needSelect = NO;
     if (iPhoneX) {
         header_h = 88;
         footer_h = 83;
@@ -70,11 +75,7 @@
     // 判断相册权限问题
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized){//用户之前已经授权
         
-        NSLog(@"用户之前已经授权");
-        // 设置数据源(collection:传某一个相册,如果传nil则获取相机胶卷 asending:是否按时间倒序排列)
-        self.items = [[JJPhotoManager manager] fetchAssetsInCollection:nil asending:YES];
-        [JJPhotoManager manager].maxCount = self.maxCount;
-        self.collection.items = self.items;
+        [self reloadItems];
     }else if([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusDenied){//用户之前已经拒绝授权
         
         NSLog(@"用户之前已经拒绝授权");
@@ -87,10 +88,7 @@
                 NSLog(@"用户允许访问相册了");
                 dispatch_async(dispatch_get_main_queue(), ^{//主线埕执行
         
-                    // 设置数据源(collection:传某一个相册,如果传nil则获取相机胶卷 asending:是否按时间倒序排列)
-                    self.items = [[JJPhotoManager manager] fetchAssetsInCollection:nil asending:YES];
-                    [JJPhotoManager manager].maxCount = self.maxCount;
-                    self.collection.items = self.items;
+                    [self reloadItems];
                 });
                 return;
             }
@@ -181,6 +179,24 @@
         }
     });
 }
+- (void)JJPhotosCollectionReloadItems:(BOOL)reloadItems
+{
+    needSelect = reloadItems;
+    if (!needSelect) return;
+    [self reloadItems];
+}
+
+#pragma mark 刷新数据源
+- (void)reloadItems
+{
+    // 设置数据源(collection:传某一个相册,如果传nil则获取相机胶卷 asending:是否按时间倒序排列)
+    self.items = [[JJPhotoManager manager] fetchAssetsInCollection:self.assetCollection asending:NO];
+    [JJPhotoManager manager].maxCount = self.maxCount;
+    self.collection.photoListName = photoListName;
+    self.collection.needSelect = needSelect;
+    self.collection.items = self.items;
+}
+#pragma  mark --------------------
 - (void)preview:(UIButton *)sender
 {
     NSArray *array = [JJPhotoManager getPhotos];
@@ -232,7 +248,13 @@
 - (void)JJAlbumListTableViewDidSelectAlbum:(JJAblumInfo *)album
 {
     [self albumListBackHidden];
-    self.items = [[JJPhotoManager manager] fetchAssetsInCollection:album.assetCollection asending:YES];
-    self.collection.items = self.items;
+    if ([photoListName isEqualToString:album.ablumName]) {
+        return;
+    }
+    [JJPhotoManager clear];// 清除选择,重新选择
+    self.assetCollection = album.assetCollection;
+    photoListName = album.ablumName;
+    needSelect = NO;
+    [self reloadItems];
 }
 @end

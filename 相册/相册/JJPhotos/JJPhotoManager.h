@@ -67,10 +67,21 @@
  */
 @property (nonatomic , strong) NSMutableDictionary *titles;
 
-/*
+/**
+ * 选中的cell
+ */
++ (NSArray<JJPhotosCollectionCell*> *)getCells;
+
+/**
+ * 更新新的选中的cells
+ */
+- (void)reloadNewCells:(NSArray<JJPhotosCollectionCell*> *)cells;
+
+/**
  * 清理选取数据
  */
 + (void)clear;
+
 /*
  * 清理图片数组
  */
@@ -84,4 +95,9 @@
  * 删除数据
  */
 - (void)delectCell:(JJPhotosCollectionCell *)cell asset:(id)asset;
+
+/**
+ * 刷新cell
+ */
+- (void)reloadCells;
 @end

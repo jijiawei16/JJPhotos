@@ -39,6 +39,12 @@
 - (void)setAsset:(PHAsset *)asset
 {
     _asset = asset;
+    NSArray *assets = [JJPhotoManager getAssets];
+    [assets enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (asset == (PHAsset *)obj) {
+            self.select.selected = YES;
+        }
+    }];
     // 设置size会让图片变得清楚一点
     [[JJPhotoManager manager] fetchImageInAsset:self.asset size:CGSizeMake(self.frame.size.width*4, self.frame.size.height*4) isResize:YES completeBlock:^(UIImage *image, NSDictionary *info) {
         
@@ -86,6 +92,7 @@
     // 判断是否需要设置弹性动画
     if (!_select.selected) {
         
+        _select.selected = YES;
         // 先缩小
         _select.transform = CGAffineTransformMakeScale(0.6, 0.6);
         _select.userInteractionEnabled = NO;
@@ -103,12 +110,12 @@
         [[JJPhotoManager manager] addcell:self asset:self.asset];
         
     }else {
+        _select.selected = NO;
         // 重新设置背景图片
         self.select.userInteractionEnabled = YES;
         [_select setImage:[UIImage imageNamed:@"图片未选中"] forState:UIControlStateNormal];
         [[JJPhotoManager manager] delectCell:self asset:self.asset];
     }
-    _select.selected = !_select.selected;
     
     // 先判断是否达到了图片的最大值,判断是否可以选择该图片
     if ([JJPhotoManager isMax]) {
@@ -137,6 +144,7 @@
     if (_select == nil) {
         _select = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width-25, 3, 22, 22)];
         _select.layer.cornerRadius = 11.0;
+        _select.selected = NO;
         [_select setImage:[UIImage imageNamed:@"图片未选中"] forState:UIControlStateNormal];
         [_select setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _select.titleLabel.font = [UIFont systemFontOfSize:14];

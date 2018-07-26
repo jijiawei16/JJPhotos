@@ -29,9 +29,13 @@
 @property (nonatomic , strong) NSString *title;
 ///是否最大值
 @property (nonatomic , assign) BOOL isMax;
+///标识
+@property (nonatomic , assign) NSInteger rowNum;
 
 ///显示遮罩
 - (void)showShade;
 ///隐藏遮罩
 - (void)hiddenShade;
+///选中
+- (void)selectBtnClick;
 @end

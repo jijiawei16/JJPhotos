@@ -266,6 +266,7 @@
     // 清除选中的数据
     [JJPhotoManager manager].assets = [NSMutableArray array];
     [JJPhotoManager manager].cells  = [NSMutableArray array];
+    [JJPhotoManager manager].images = [NSMutableArray array];
 }
 + (void)clearImages
 {
@@ -312,9 +313,18 @@
 // 刷新选中cell的布局
 - (void)reloadCells{
     [self.cells enumerateObjectsUsingBlock:^(JJPhotosCollectionCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop){
+        obj.select.selected = YES;
         obj.title = [NSString stringWithFormat:@"%lu",idx+1];
         [obj.select setTitle:obj.title forState:UIControlStateNormal];
         obj.select.backgroundColor = [UIColor redColor];
     }];
+}
++ (NSArray<JJPhotosCollectionCell*> *)getCells
+{
+    return [JJPhotoManager manager].cells;
+}
+- (void)reloadNewCells:(NSArray<JJPhotosCollectionCell *> *)cells
+{
+    self.cells = [NSMutableArray arrayWithArray:cells];
 }
 @end

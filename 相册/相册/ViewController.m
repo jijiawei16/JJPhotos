@@ -39,6 +39,7 @@
 
     img = [[UIImageView alloc] initWithFrame:CGRectMake(200, 300, 100, 100)];
     [self.view addSubview:img];
+
 }
 - (void)icon
 {

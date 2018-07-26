@@ -14,6 +14,8 @@
 
 ///选中了cell
 - (void)JJPhotosCollectionDidSelectCell;
+///拍照界面消失,是否刷新
+- (void)JJPhotosCollectionReloadItems:(BOOL)reloadItems;
 @end
 @interface JJPhotosCollection : UICollectionView
 
@@ -22,4 +24,9 @@
 
 ///设置数据源
 @property (nonatomic , strong) NSArray *items;
+
+///是否是相册列表
+@property (nonatomic , strong) NSString *photoListName;
+///是否需要选中第一个cell
+@property (nonatomic , assign) BOOL needSelect;
 @end
