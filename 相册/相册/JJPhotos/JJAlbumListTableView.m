@@ -86,4 +86,10 @@
         [self.jj_delegate JJAlbumListTableViewDidSelectAlbum:self.items[indexPath.row]];
     }
 }
+#pragma mark 重命名
+- (NSString *)getNewTitle:(NSString *)title
+{
+
+    return @"XXX";
+}
 @end

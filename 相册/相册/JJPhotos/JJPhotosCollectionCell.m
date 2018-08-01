@@ -10,8 +10,6 @@
 
 @interface JJPhotosCollectionCell ()
 
-/* 相册图片 */
-@property (nonatomic , strong) UIImageView *photo;
 /* 遮罩 */
 @property (nonatomic , strong) UIView *head;
 @end
@@ -50,6 +48,11 @@
         
         self.photo.image = image;
     }];
+    // 获取原图大小
+    [[JJPhotoManager manager] getImageDataLength:self.asset completeBlock:^(CGFloat length) {
+        [JJPhotoManager addCellImgSize:length index:self.rowNum];
+    }];
+    [JJPhotoManager addCell:self index:self.rowNum];
 }
 - (void)setIsMax:(BOOL)isMax
 {

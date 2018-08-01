@@ -12,6 +12,7 @@ typedef void(^JJPhotosViewControllerCallBack)(NSArray *images);
 @interface JJPhotosViewController : UIViewController
 
 - (instancetype)initWithcallBack:(JJPhotosViewControllerCallBack)callBack;
+
 ///可以添加图片的最大数
 @property (nonatomic , assign) NSInteger maxCount;
 @end

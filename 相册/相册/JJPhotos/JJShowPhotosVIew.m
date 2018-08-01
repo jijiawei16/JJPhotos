@@ -11,11 +11,16 @@
 
 #define sw self.frame.size.width
 #define sh self.frame.size.height
+#define IPHONEX ([UIScreen mainScreen].bounds.size.height == 812.0f)?YES:NO
+#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a]
+#define nav_h (IPHONEX==YES)?88:64
+#define bottom_h (IPHONEX==YES)?34:0
 @interface JJShowPhotosVIew ()<UIScrollViewDelegate>
 
 @property (nonatomic , strong) NSArray *items;
-@property (nonatomic , strong) UIButton *save;
 @property (nonatomic , strong) UILabel *left;
+@property (nonatomic , strong) UIButton *back;
+@property (nonatomic , strong) UIButton *select;
 @end
 @implementation JJShowPhotosVIew
 
@@ -29,20 +34,30 @@
         self.pagingEnabled = YES;
         self.delegate = self;
         
+        UIView * header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, sw, nav_h)];
+        header.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+        [self addSubview:header];
+        
+        self.back = [[UIButton alloc] initWithFrame:CGRectMake(15, nav_h-10, 30, 30)];
+        [_back setImage:[UIImage imageNamed:@"pop"] forState:UIControlStateNormal];
+        [self addSubview:_back];
+        
+        
        self.left = [[UILabel alloc] initWithFrame:CGRectMake(0, window.frame.size.height-50, 80, 50)];
         _left.textColor = [UIColor whiteColor];
         _left.textAlignment = NSTextAlignmentCenter;
         
-        self.save = [[UIButton alloc] initWithFrame:CGRectMake(window.frame.size.width-100, window.frame.size.height-50, 100, 50)];
-        [_save addTarget:self action:@selector(save:) forControlEvents:UIControlEventTouchUpInside];
-        [_save setTitle:@"保存" forState:UIControlStateNormal];
-        [_save setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//        self.save = [[UIButton alloc] initWithFrame:CGRectMake(window.frame.size.width-100, window.frame.size.height-50, 100, 50)];
+//        [_save addTarget:self action:@selector(save:) forControlEvents:UIControlEventTouchUpInside];
+//        [_save setTitle:@"保存" forState:UIControlStateNormal];
+//        [_save setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     }
     return self;
 }
 - (void)setUpItems:(NSArray *)items current:(NSInteger)current
 {
     _items = items;
+    return;
     CGFloat y = 0;
     CGFloat height = 0;
     UIImage *image;
@@ -64,7 +79,6 @@
             }else {
                 y = (sh-height)/2;
             }
-
         }
         UIScrollView *back = [[UIScrollView alloc] initWithFrame:CGRectMake(i*(sw), 0, sw, sh)];
         back.contentSize = CGSizeMake(0, height);
@@ -85,7 +99,7 @@
     self.contentSize = CGSizeMake(items.count*(sw), 0);
     [window addSubview:self];
     [window addSubview:_left];
-    if (_showSave) [window addSubview:_save];
+//    if (_showSave) [window addSubview:_save];
     
     _left.text = [NSString stringWithFormat:@"%ld / %lu",(long)current+1,(unsigned long)_items.count];
     self.contentOffset = CGPointMake(current*sw, 0);
@@ -101,7 +115,7 @@
 {
     [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     [_left removeFromSuperview];
-    [_save removeFromSuperview];
+//    [_save removeFromSuperview];
     [self removeFromSuperview];
 }
 - (void)save:(UIButton *)sender

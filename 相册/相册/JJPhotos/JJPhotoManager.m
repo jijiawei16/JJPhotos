@@ -14,14 +14,19 @@
 #define SCREEN_H    ([[UIScreen mainScreen] bounds].size.height)
 @interface JJPhotoManager ()
 
-// 解析后的图片数组
+/// 解析后的小图片数组
 @property (nonatomic , strong) NSMutableArray *images;
-// 相册列表
+/// 解析后的原图数组
+@property (nonatomic , strong) NSMutableArray *Artworks;
+/// 当前页面所有cell
+@property (nonatomic , strong) NSMutableArray *allCells;
+/// 当前页面所有原图大小
+@property (nonatomic , strong) NSMutableArray *artworkSizes;
+/// 相册列表
 @property (nonatomic ,strong) NSMutableArray<JJAblumInfo *> * ablumsList;
-
-// 选中的cell数组
-@property (nonatomic , strong) NSMutableArray <JJPhotosCollectionCell*>*cells;
-// 选中的图片asset数组
+/// 选中的cell数组
+@property (nonatomic , strong) NSMutableArray <JJPhotosCollectionCell*>*selectCells;
+/// 选中的图片asset数组
 @property (nonatomic , strong) NSMutableArray <PHAsset *>*assets;
 @end
 @implementation JJPhotoManager
@@ -33,14 +38,17 @@
     dispatch_once(&onceToken, ^{
         manager = [[JJPhotoManager alloc]init];
         manager.ablumsList = [NSMutableArray array];
-        manager.cells = [NSMutableArray array];
+        manager.selectCells = [NSMutableArray array];
         manager.assets = [NSMutableArray array];
         manager.images = [NSMutableArray array];
+        manager.Artworks = [NSMutableArray array];
+        manager.allCells = [NSMutableArray array];
+        manager.artworkSizes = [NSMutableArray array];
     });
     return manager;
 }
 
-/*
+/**
  * 获取所有相册
  */
 - (NSArray<JJAblumInfo *> *)getAllAblums
@@ -59,7 +67,7 @@
     return _ablumsList;
 }
 
-/*
+/**
  * 获取相册资源
  */
 - (void)fetchCollection:(PHFetchResult *)obj {
@@ -86,7 +94,7 @@
 }
 
 
-/*
+/**
  * 获取（指定相册）或者（所有相册）资源的合集，并按资源的创建时间进行排序 YES  倒序 NO
  */
 - (PHFetchResult *)fetchResultInCollection:(PHAssetCollection *)collection asending:(BOOL)asending {
@@ -106,7 +114,7 @@
     return result;
 }
 
-/*
+/**
  * 获取（指定相册）或者（所有相册 collection为nil）资源
  */
 - (NSArray<PHAsset *> *)fetchAssetsInCollection:(PHAssetCollection *)collection asending:(BOOL)asending{
@@ -136,13 +144,12 @@
     return list;
 }
 
-/*
+/**
  * 获取资源对应的图片
  */
 - (void)fetchImageInAsset:(PHAsset *)asset size:(CGSize)size isResize:(BOOL)isResize completeBlock:(void(^)(UIImage * image, NSDictionary * info))completeBlock {
     
     PHImageRequestOptions * option = [[PHImageRequestOptions alloc]init];
-    //resizeMode：None，不缩放；Fast，尽快地提供接近或稍微大于要求的尺寸；Exact，精准提供要求的尺寸。
     option.resizeMode = isResize ? PHImageRequestOptionsResizeModeFast : PHImageRequestOptionsResizeModeNone;
     option.networkAccessAllowed = YES;
     
@@ -152,7 +159,7 @@
     }];
 }
 
-/*
+/**
  * 获取资源对应的原图大小
  */
 - (void)getImageDataLength:(PHAsset *)asset completeBlock:(void(^)(CGFloat length))completeBlock{
@@ -167,86 +174,37 @@
     }];
 }
 
-/*
- * 解析图片数组,顺序会改变
- */
-- (void)getImagesWithIsOriginal:(BOOL)isOriginal completeBlock:(void(^)(void))completeBlock
-{
-    // 判断是否选中了图片
-    if (_assets.count == 0) {
-        [JJPhotoManager manager].images = [NSMutableArray array];
-        [JJPhotoManager clear];
-        if (completeBlock) completeBlock();
-    }
-    // 设置占位数据
-    NSMutableArray * images = [NSMutableArray array];
-    for (int i = 0; i < _assets.count; i ++) {
-
-        PHAsset * asset = _assets[i];
-        CGSize size;
-
-        if (isOriginal) {
-
-            //源图 -> 不压缩
-            size = CGSizeMake((CGFloat)asset.pixelWidth, (CGFloat)asset.pixelHeight);
-
-        }else {
-
-            //压缩的图 －> 以最长边为屏幕分辨率压缩
-            CGFloat scale = (CGFloat)asset.pixelWidth / (CGFloat)asset.pixelHeight;
-            if (scale > 1.0) {
-
-                if (asset.pixelWidth < SCREEN_W) {
-                    //最长边小于屏幕宽度时，采用原图
-                    size = CGSizeMake((CGFloat)asset.pixelWidth, (CGFloat)asset.pixelHeight);
-                }else {
-                    //压缩
-                    size = CGSizeMake(SCREEN_W, SCREEN_W / scale);
-                }
-
-            }else {
-
-                if (asset.pixelHeight < SCREEN_H) {
-                    //最长边小于屏幕高度时，采用原图
-                    size = CGSizeMake((CGFloat)asset.pixelWidth, (CGFloat)asset.pixelHeight);
-                }else {
-                    //压缩
-                    size = CGSizeMake(SCREEN_H * scale, SCREEN_H);
-                }
-            }
-        }
-
-        [self fetchImageInAsset:asset size:size isResize:YES completeBlock:^(UIImage *image, NSDictionary *info) {
-            
-            //当图片读取到指定尺寸时
-            if (image.size.width >= size.width * OriginalRatio || image.size.height >= size.height * OriginalRatio) {
-
-                [images addObject:image];
-
-                //全部图片读取完毕,并初始化选中相册的数组
-                if (images.count == _assets.count) {
-
-                    self.images = images;
-                    [JJPhotoManager clear];
-                    if (completeBlock) completeBlock();
-                }
-            }
-        }];
-    }
-}
-
-/*
- * 获取解析后的图片数组
- */
 + (NSArray *)getPhotos
 {
     return [JJPhotoManager manager].images;
 }
-
++ (NSArray *)getArtworks
+{
+    return [JJPhotoManager manager].Artworks;
+}
++ (NSArray *)getAllCells
+{
+    return [JJPhotoManager manager].allCells;
+}
++ (void)reloadCellsAndArtworkSizesWithcount:(NSInteger)count
+{
+    for (NSInteger i = 0; i < count; i++) {
+        [[JJPhotoManager manager].allCells addObject:@""];
+        [[JJPhotoManager manager].artworkSizes addObject:@""];
+    }
+}
++ (void)addCell:(JJPhotosCollectionCell *)cell index:(NSInteger)index
+{
+    [JJPhotoManager manager].allCells[index] = cell;
+}
++ (void)addCellImgSize:(CGFloat)size index:(NSInteger)index
+{
+    [JJPhotoManager manager].artworkSizes[index] = @(size);
+}
 #pragma mark 图片保存与操作
 + (BOOL)isMax
 {
-    NSInteger cell_count = [JJPhotoManager manager].cells.count;
+    NSInteger cell_count = [JJPhotoManager manager].selectCells.count;
     NSInteger asset_count = [JJPhotoManager manager].assets.count;
     NSInteger max_count = [JJPhotoManager manager].maxCount;
     
@@ -265,66 +223,87 @@
 {
     // 清除选中的数据
     [JJPhotoManager manager].assets = [NSMutableArray array];
-    [JJPhotoManager manager].cells  = [NSMutableArray array];
+    [JJPhotoManager manager].selectCells  = [NSMutableArray array];
     [JJPhotoManager manager].images = [NSMutableArray array];
+    [JJPhotoManager manager].Artworks = [NSMutableArray array];
+    [JJPhotoManager manager].Artworks = [NSMutableArray array];
+    [JJPhotoManager manager].allCells = [NSMutableArray array];
+    [JJPhotoManager manager].artworkSizes = [NSMutableArray array];
 }
-+ (void)clearImages
-{
-    [JJPhotoManager manager].images = [NSMutableArray array];
-}
+/**
+ * 添加一个cell和图片信息
+ * @param cell 要添加的cell
+ * @param asset 图片信息
+ */
 - (void)addcell:(JJPhotosCollectionCell *)cell asset:(id)asset
 {
-    if (![self.cells containsObject:cell]) {
-        [self.cells addObject:cell];
+    if (![self.selectCells containsObject:cell]) {
+        [self.selectCells addObject:cell];
     }
     if (![self.assets containsObject:asset]) {
         [self.assets addObject:asset];
         PHAsset *set = (PHAsset*)asset;
+        // 保存缩略图图片和原图
+        if (![self.images containsObject:cell.photo.image]) {
+            [self.images addObject:cell.photo.image];
+        }
         [self fetchImageInAsset:asset size:CGSizeMake(set.pixelWidth, set.pixelHeight) isResize:YES completeBlock:^(UIImage *image, NSDictionary *info) {
             
             if ([[NSString stringWithFormat:@"%@",info[@"PHImageResultIsDegradedKey"]] isEqualToString:@"1"]) return;
-            if (![self.images containsObject:image]) {
-                [self.images addObject:image];
+            if (![self.Artworks containsObject:image]) {
+                [self.Artworks addObject:image];
             }
         }];
     }
-    [self reloadCells];
+    [self reloadSelectCells];
 }
+/**
+ * 删除cell和相关图片信息
+ * @param cell 要添加的cell
+ * @param asset 图片信息
+ */
 - (void)delectCell:(JJPhotosCollectionCell *)cell asset:(id)asset
 {
-    if ([self.cells containsObject:cell]) {
+    if ([self.selectCells containsObject:cell]) {
         cell.select.backgroundColor = [UIColor clearColor];
         cell.title = @"";
-        [self.cells removeObject:cell];
+        [self.selectCells removeObject:cell];
     }
     if ([self.assets containsObject:asset]) {
         for (NSInteger i = 0; i<self.assets.count; i++) {
             if (asset == self.assets[i]) {
                 // 延迟一段时间再删除，有可能图片还没有保存好
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.Artworks removeObjectAtIndex:i];
                     [self.images removeObjectAtIndex:i];
                 });
             }
         }
         [self.assets removeObject:asset];
     }
-    [self reloadCells];
+    [self reloadSelectCells];
 }
-// 刷新选中cell的布局
-- (void)reloadCells{
-    [self.cells enumerateObjectsUsingBlock:^(JJPhotosCollectionCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop){
+/**
+ * 刷新选中cell的布局
+ */
+- (void)reloadSelectCells
+{
+    __block CGFloat size = 0;
+    [self.selectCells enumerateObjectsUsingBlock:^(JJPhotosCollectionCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop){
         obj.select.selected = YES;
         obj.title = [NSString stringWithFormat:@"%lu",idx+1];
         [obj.select setTitle:obj.title forState:UIControlStateNormal];
         obj.select.backgroundColor = [UIColor redColor];
+        size += [self.artworkSizes[obj.rowNum] floatValue];
     }];
+    self.selectSize = size;
 }
-+ (NSArray<JJPhotosCollectionCell*> *)getCells
++ (NSArray<JJPhotosCollectionCell*> *)getSelectCells
 {
-    return [JJPhotoManager manager].cells;
+    return [JJPhotoManager manager].selectCells;
 }
-- (void)reloadNewCells:(NSArray<JJPhotosCollectionCell *> *)cells
+- (void)reloadNewSelectCells:(NSArray<JJPhotosCollectionCell *> *)cells
 {
-    self.cells = [NSMutableArray arrayWithArray:cells];
+    self.selectCells = [NSMutableArray arrayWithArray:cells];
 }
 @end

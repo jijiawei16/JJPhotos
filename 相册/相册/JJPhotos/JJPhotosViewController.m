@@ -10,7 +10,7 @@
 #import "JJPhotoManager.h"
 #import "JJPhotosCollection.h"
 #import "JJPhotosCollectionFlowLayout.h"
-#import "JJShowPhotosVIew.h"
+#import "JJPhotosScroll.h"
 #import "JJAlbumListTableView.h"
 #import "UIButton+JJType.h"///按钮图片文字样式设置
 
@@ -19,12 +19,13 @@
 #define sw self.view.frame.size.width
 #define sh self.view.frame.size.height
 #define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
-@interface JJPhotosViewController ()<JJPhotosCollectionDelegate,JJAlbumListTableViewDelegate>
+@interface JJPhotosViewController ()<JJPhotosCollectionDelegate,JJAlbumListTableViewDelegate,JJPhotosScrollDelegate>
 
 @property (nonatomic , strong) UIView *header;
 @property (nonatomic , strong) UIView *footer;
 @property (nonatomic , strong) JJPhotosCollection *collection;
 @property (nonatomic , strong) NSArray *items;
+@property (nonatomic , strong) NSArray *assets;
 @property (nonatomic , strong) PHAssetCollection *assetCollection;
 @property (nonatomic , copy) JJPhotosViewControllerCallBack block;
 @end
@@ -38,6 +39,8 @@
     JJAlbumListTableView *albumList;///相册列表
     UIButton *albumListBtn;///相册列表按钮
     NSString *photoListName;///用来判断相册列表的标识
+    UIButton *artwork;///原图选择按钮
+    UILabel *artLab;///原图大小lab
     BOOL needSelect;///是否需要自动选中第一个照片
 }
 - (instancetype)initWithcallBack:(JJPhotosViewControllerCallBack)callBack
@@ -52,7 +55,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor lightTextColor];
     self.assetCollection = nil;
-    photoListName = @"Camera Roll";
+    photoListName = @"相机胶卷";
     needSelect = NO;
     if (iPhoneX) {
         header_h = 88;
@@ -68,9 +71,6 @@
     
     // 添加子视图
     [self creatSubViews];
-    
-    // 初始化选中相册数组
-    [JJPhotoManager clearImages];
     
     // 判断相册权限问题
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized){//用户之前已经授权
@@ -99,15 +99,29 @@
 }
 - (void)creatSubViews
 {
-    // 预览按钮
-    UIButton *preview = [[UIButton alloc] initWithFrame:CGRectMake(15, 5, 50, 40)];
-    [preview setTitle:@"预览" forState:UIControlStateNormal];
-    [preview setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [preview addTarget:self action:@selector(preview:) forControlEvents:UIControlEventTouchUpInside];
-    [_footer addSubview:preview];
+    // 原图按钮
+    artwork = [[UIButton alloc] initWithFrame:CGRectMake(15, 10, 70, 30)];
+    artwork.selected = NO;
+    [artwork setTitle:@"原图" forState:UIControlStateNormal];
+    [artwork setImage:[UIImage imageNamed:@"artworkNomal"] forState:UIControlStateNormal];
+    [artwork setImage:[UIImage imageNamed:@"artworkSelect"] forState:UIControlStateSelected];
+    [artwork layoutButtonWithEdgeInsetsStyle:JJButtonEdgeInsetsStyleLeft imageTitleSpace:5];
+    [artwork setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [artwork addTarget:self action:@selector(artwork:) forControlEvents:UIControlEventTouchUpInside];
+    artwork.titleLabel.font = [UIFont systemFontOfSize:16];
+    [_footer addSubview:artwork];
+    
+    // 原图大小
+    artLab = [[UILabel alloc] initWithFrame:CGRectMake(90, 10, 70, 30)];
+    artLab.text = @"(0.0M)";
+    artLab.font = [UIFont systemFontOfSize:14];
+    artLab.textColor = [UIColor whiteColor];
+    artLab.textAlignment = NSTextAlignmentLeft;
+    artLab.hidden = YES;
+    [_footer addSubview:artLab];
     
     // 确定按钮
-    confirm = [[UIButton alloc] initWithFrame:CGRectMake(sw-65, 10, 50, 30)];
+    confirm = [[UIButton alloc] initWithFrame:CGRectMake(sw-75, 10, 60, 30)];
     [confirm setTitle:@"完成" forState:UIControlStateNormal];
     confirm.userInteractionEnabled = NO;
     [confirm setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -119,7 +133,7 @@
     [_footer addSubview:confirm];
     
     // 取消按钮
-    UIButton *cancel = [[UIButton alloc] initWithFrame:CGRectMake(sw-65, header_h-40, 50, 30)];
+    UIButton *cancel = [[UIButton alloc] initWithFrame:CGRectMake(15, header_h-40, 50, 30)];
     [cancel setTitle:@"取消" forState:UIControlStateNormal];
     [cancel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [cancel addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
@@ -128,7 +142,7 @@
     
     // 相册列表按钮
     albumListBtn = [[UIButton alloc] initWithFrame:CGRectMake(sw/2-50, header_h-40, 100, 30)];
-    [albumListBtn setTitle:@"相册列表" forState:UIControlStateNormal];
+    [albumListBtn setTitle:@"相机胶卷" forState:UIControlStateNormal];
     [albumListBtn setImage:[UIImage imageNamed:@"下拉"] forState:UIControlStateNormal];
     [albumListBtn setImage:[UIImage imageNamed:@"收回"] forState:UIControlStateSelected];
     [albumListBtn layoutButtonWithEdgeInsetsStyle:JJButtonEdgeInsetsStyleRight imageTitleSpace:5];
@@ -136,6 +150,14 @@
     [albumListBtn addTarget:self action:@selector(albumList:) forControlEvents:UIControlEventTouchUpInside];
     albumListBtn.titleLabel.font = [UIFont systemFontOfSize:18];
     [_header addSubview:albumListBtn];
+    
+    // 预览按钮
+    UIButton *preview = [[UIButton alloc] initWithFrame:CGRectMake(sw-65, header_h-40, 50, 30)];
+    [preview setTitle:@"预览" forState:UIControlStateNormal];
+    [preview setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [preview addTarget:self action:@selector(preview:) forControlEvents:UIControlEventTouchUpInside];
+    preview.titleLabel.font = [UIFont systemFontOfSize:16];
+    [_header addSubview:preview];
 }
 
 #pragma mark 懒加载
@@ -170,13 +192,17 @@
     // 这里需要等一段时间才能操作,保存相册图片需要一段时间,用到了block回调
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
        
-        if ([JJPhotoManager getPhotos].count) {
-            [confirm setBackgroundColor:[UIColor greenColor]];
+        NSInteger num = [JJPhotoManager getSelectCells].count;
+        if (num) {
+            [confirm setBackgroundColor:[UIColor colorWithRed:235/255.0 green:37/255.0 blue:39/255.0 alpha:1]];
             confirm.userInteractionEnabled = YES;
+            [confirm setTitle:[NSString stringWithFormat:@"完成(%ld)",(long)num] forState:UIControlStateNormal];
         }else {
             [confirm setBackgroundColor:[UIColor lightGrayColor]];
+            [confirm setTitle:[NSString stringWithFormat:@"完成"] forState:UIControlStateNormal];
             confirm.userInteractionEnabled = NO;
         }
+        artLab.text = [NSString stringWithFormat:@"(%.1f)M",[JJPhotoManager manager].selectSize/1024];
     });
 }
 - (void)JJPhotosCollectionReloadItems:(BOOL)reloadItems
@@ -190,24 +216,44 @@
 - (void)reloadItems
 {
     // 设置数据源(collection:传某一个相册,如果传nil则获取相机胶卷 asending:是否按时间倒序排列)
-    self.items = [[JJPhotoManager manager] fetchAssetsInCollection:self.assetCollection asending:NO];
+    self.assets = [[JJPhotoManager manager] fetchAssetsInCollection:self.assetCollection asending:NO];
+    self.items = self.assets;
+    // 如果是相册的列表,展示拍照功能
+    if ([photoListName isEqualToString:@"Camera Roll"]||[photoListName isEqualToString:@"相机胶卷"]) {
+        NSMutableArray *temp = [NSMutableArray arrayWithObjects:@"拍照", nil];
+        [temp addObjectsFromArray:_items];
+        _items = temp;
+    }
+    [albumListBtn setTitle:photoListName forState:UIControlStateNormal];
+    [albumListBtn layoutButtonWithEdgeInsetsStyle:JJButtonEdgeInsetsStyleRight imageTitleSpace:5];
+    [JJPhotoManager reloadCellsAndArtworkSizesWithcount:self.items.count];
     [JJPhotoManager manager].maxCount = self.maxCount;
     self.collection.photoListName = photoListName;
     self.collection.needSelect = needSelect;
     self.collection.items = self.items;
 }
 #pragma  mark --------------------
+- (void)artwork:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    artLab.hidden = !sender.selected;
+}
 - (void)preview:(UIButton *)sender
 {
-    NSArray *array = [JJPhotoManager getPhotos];
-    if (array.count) {
-        JJShowPhotosVIew *show = [[JJShowPhotosVIew alloc] init];
-        [show setUpItems:[JJPhotoManager getPhotos] current:0];
+    NSArray *showCells = [JJPhotoManager getSelectCells];
+    if (!showCells.count) {// 如果没有选择则不展示
+        return;
     }
+    [JJPhotosScroll showItmes:showCells index:0 delegate:self];
 }
 - (void)confirm:(UIButton *)sender
 {
-    self.block([JJPhotoManager getPhotos]);
+    // 这里判断是否发送原图
+    if (artwork.selected) {
+        self.block([JJPhotoManager getArtworks]);
+    }else {
+        self.block([JJPhotoManager getPhotos]);
+    }
     [JJPhotoManager clear];
     [self dismissViewControllerAnimated:YES completion:nil];
 }

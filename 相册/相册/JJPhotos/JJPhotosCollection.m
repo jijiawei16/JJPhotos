@@ -43,13 +43,13 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return (NSInteger)_data.count;
+    return (NSInteger)_items.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     
     
-    if (indexPath.row == 0&&[self.photoListName isEqualToString:@"Camera Roll"]) {
+    if (indexPath.row == 0&&([self.photoListName isEqualToString:@"Camera Roll"]||[self.photoListName isEqualToString:@"相机胶卷"])) {
         
         NSString *identifier = [_identifies objectForKey:@"photo"];
         if (identifier == nil) {
@@ -123,15 +123,7 @@
 #pragma mark 设置数据源
 - (void)setItems:(NSArray *)items
 {
-    // 如果是相册的列表,展示拍照功能
-    if ([self.photoListName isEqualToString:@"Camera Roll"]) {
-        NSMutableArray *temp = [NSMutableArray arrayWithObjects:@"拍照", nil];
-        [temp addObjectsFromArray:items];
-        _items = temp;
-    }else {
-        _items = items;
-    }
-    self.data = [NSMutableArray arrayWithArray:_items];
+    _items = items;
     self.identifies = [NSMutableDictionary dictionary];
     [self reloadData];
     
@@ -140,7 +132,7 @@
         
         if (self.needSelect) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
-            NSArray *cells = [JJPhotoManager getCells];
+            NSArray *cells = [JJPhotoManager getSelectCells];
             [JJPhotoManager clear];
             NSMutableArray *temp = [NSMutableArray array];
             [cells enumerateObjectsUsingBlock:^(JJPhotosCollectionCell *obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -150,7 +142,7 @@
                 [cell selectBtnClick];
                 [temp addObject:cell];
             }];
-            [[JJPhotoManager manager] reloadNewCells:temp];
+            [[JJPhotoManager manager] reloadNewSelectCells:temp];
             JJPhotosCollectionCell *cell = (JJPhotosCollectionCell *)[self cellForItemAtIndexPath:indexPath];
             [cell selectBtnClick];
             cell.select.selected = YES;

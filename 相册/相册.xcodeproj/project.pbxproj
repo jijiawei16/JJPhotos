@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		0F060E3D20FD983300BAD633 /* JJAlbumListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F060E3C20FD983300BAD633 /* JJAlbumListTableView.m */; };
 		0F060E4120FDBA6800BAD633 /* UIButton+JJType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F060E3F20FDBA6800BAD633 /* UIButton+JJType.m */; };
+		0F0E64E821114CBA0040C157 /* artworkSelect1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E64E721114CBA0040C157 /* artworkSelect1.png */; };
+		0F0E64EA21114CC50040C157 /* artworkNomal1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E64E921114CC50040C157 /* artworkNomal1.png */; };
+		0F0E64EF21114F0E0040C157 /* artworkSelect.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E64EE21114F0E0040C157 /* artworkSelect.png */; };
+		0F0E64F121114F130040C157 /* artworkNomal.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E64F021114F130040C157 /* artworkNomal.png */; };
+		0F0E64F3211178E00040C157 /* pop.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E64F2211178E00040C157 /* pop.png */; };
+		0F0E64F921117E600040C157 /* JJPhotosScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F0E64F821117E600040C157 /* JJPhotosScroll.m */; };
 		0F383D92210898700043E7B1 /* JJPhotograph.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F383D91210898700043E7B1 /* JJPhotograph.m */; };
 		0F383D952108B7710043E7B1 /* JJPhotographCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F383D942108B7710043E7B1 /* JJPhotographCollectionViewCell.m */; };
 		0F383DDA2109C9170043E7B1 /* cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F383DD92109C9170043E7B1 /* cancel.png */; };
@@ -63,6 +69,13 @@
 		0F060E3C20FD983300BAD633 /* JJAlbumListTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JJAlbumListTableView.m; sourceTree = "<group>"; };
 		0F060E3F20FDBA6800BAD633 /* UIButton+JJType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+JJType.m"; sourceTree = "<group>"; };
 		0F060E4020FDBA6800BAD633 /* UIButton+JJType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+JJType.h"; sourceTree = "<group>"; };
+		0F0E64E721114CBA0040C157 /* artworkSelect1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = artworkSelect1.png; sourceTree = "<group>"; };
+		0F0E64E921114CC50040C157 /* artworkNomal1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = artworkNomal1.png; sourceTree = "<group>"; };
+		0F0E64EE21114F0E0040C157 /* artworkSelect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = artworkSelect.png; sourceTree = "<group>"; };
+		0F0E64F021114F130040C157 /* artworkNomal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = artworkNomal.png; sourceTree = "<group>"; };
+		0F0E64F2211178E00040C157 /* pop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pop.png; sourceTree = "<group>"; };
+		0F0E64F721117E600040C157 /* JJPhotosScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JJPhotosScroll.h; sourceTree = "<group>"; };
+		0F0E64F821117E600040C157 /* JJPhotosScroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JJPhotosScroll.m; sourceTree = "<group>"; };
 		0F383D902108986F0043E7B1 /* JJPhotograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JJPhotograph.h; sourceTree = "<group>"; };
 		0F383D91210898700043E7B1 /* JJPhotograph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JJPhotograph.m; sourceTree = "<group>"; };
 		0F383D932108B7710043E7B1 /* JJPhotographCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JJPhotographCollectionViewCell.h; sourceTree = "<group>"; };
@@ -154,6 +167,11 @@
 		0F383DD82109C8F50043E7B1 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				0F0E64F2211178E00040C157 /* pop.png */,
+				0F0E64F021114F130040C157 /* artworkNomal.png */,
+				0F0E64EE21114F0E0040C157 /* artworkSelect.png */,
+				0F0E64E921114CC50040C157 /* artworkNomal1.png */,
+				0F0E64E721114CBA0040C157 /* artworkSelect1.png */,
 				0F383DD92109C9170043E7B1 /* cancel.png */,
 				0F383DDB2109C92A0043E7B1 /* photo.png */,
 				0F383DDD2109C9390043E7B1 /* back.png */,
@@ -245,6 +263,8 @@
 				0FAADF9220D356D300246592 /* JJPhotosViewController.m */,
 				0F060E3B20FD983300BAD633 /* JJAlbumListTableView.h */,
 				0F060E3C20FD983300BAD633 /* JJAlbumListTableView.m */,
+				0F0E64F721117E600040C157 /* JJPhotosScroll.h */,
+				0F0E64F821117E600040C157 /* JJPhotosScroll.m */,
 				0FAADF9320D356D300246592 /* JJShowPhotosVIew.h */,
 				0FAADF9420D356D300246592 /* JJShowPhotosVIew.m */,
 				0F060E4020FDBA6800BAD633 /* UIButton+JJType.h */,
@@ -381,12 +401,17 @@
 				0F383DDA2109C9170043E7B1 /* cancel.png in Resources */,
 				0FAADF5D20D3569F00246592 /* LaunchScreen.storyboard in Resources */,
 				0F383DE42109CC1F0043E7B1 /* exchange.png in Resources */,
+				0F0E64F121114F130040C157 /* artworkNomal.png in Resources */,
 				0FAADFAA20D35CF800246592 /* loading.gif in Resources */,
+				0F0E64EF21114F0E0040C157 /* artworkSelect.png in Resources */,
 				0F383DE22109C9980043E7B1 /* select.png in Resources */,
 				0F383DE02109C9570043E7B1 /* camera.png in Resources */,
 				0FAADF5A20D3569F00246592 /* Assets.xcassets in Resources */,
+				0F0E64EA21114CC50040C157 /* artworkNomal1.png in Resources */,
+				0F0E64F3211178E00040C157 /* pop.png in Resources */,
 				0F383DDC2109C92A0043E7B1 /* photo.png in Resources */,
 				0FAADF5820D3569F00246592 /* Main.storyboard in Resources */,
+				0F0E64E821114CBA0040C157 /* artworkSelect1.png in Resources */,
 				0F383DDE2109C9390043E7B1 /* back.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,6 +440,7 @@
 				0F060E3D20FD983300BAD633 /* JJAlbumListTableView.m in Sources */,
 				0FAADF9B20D356D300246592 /* JJPhotosCollectionFlowLayout.m in Sources */,
 				0FAADF5520D3569F00246592 /* ViewController.m in Sources */,
+				0F0E64F921117E600040C157 /* JJPhotosScroll.m in Sources */,
 				0F060E4120FDBA6800BAD633 /* UIButton+JJType.m in Sources */,
 				0FAADFA920D35CF800246592 /* JJWebImageManager.m in Sources */,
 				0FAADFAB20D35CF800246592 /* UIImage+JJLocationGif.m in Sources */,
